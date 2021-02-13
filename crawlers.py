@@ -8,24 +8,30 @@ import os
 from os import path
 
 class BaseCrawler:
+    """
+        Ideally we could use this base crawler class to support any of the crawlers we write for this project.
+    """
     defaults = dict(
         delay=2,
         web_cache_root = "web/"
     )
 
     def __init__(self, **kwargs):
+        #Only add attributes that we define in the defaults class dictionary
         for key in BaseCrawler.defaults:
             if key in kwargs:
                 setattr(self, key, kwargs[key])
             else:
                 setattr(self, key, BaseCrawler.defaults[key])
             
-            self.discovered = set()
-            #queue for visiting pages
-            self.visit_queue = deque()
+        self.discovered = set()
+        #queue for visiting pages
+        self.visit_queue = deque()
     
     #Note: I assume we only want to scrape a single domain with one crawler.
     def crawl(self, domain, start_page):
+        """ The heavy duty method for the crawler. The crawler will crawl a website until it runs out of URLs to process.
+        """
         #Ensure we have a folder to put cache the crawled pages in
         if not os.path.exists(self.web_cache_root):
             os.makedirs(self.web_cache_root)
@@ -52,6 +58,11 @@ class BaseCrawler:
                 self.discover_pages(html)
     
     def load_resource(self, filepath, url):
+        """
+            Local an html document we want to crawl either from a local file-system class (ideal) or if the cache doesn'take
+            exist, from the web. This will cache any resources loaded from the webt so that the next time they will be 
+            available locally.
+        """
         if not path.exists(filepath):
             print("Sleeping for {} seconds".format(self.delay))
             time.sleep(self.delay)
@@ -80,6 +91,9 @@ class BaseCrawler:
                 return f.read()
     
     def discover(self, url):
+        """
+            Add a URL to our queue for visitng URLs and add to the set of visited urls
+        """
         if not url in self.discovered:
             self.discovered.add(url)
             self.visit_queue.append(url)
