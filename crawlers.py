@@ -59,8 +59,8 @@ class BaseCrawler:
     
     def load_resource(self, filepath, url):
         """
-            Local an html document we want to crawl either from a local file-system class (ideal) or if the cache doesn'take
-            exist, from the web. This will cache any resources loaded from the webt so that the next time they will be 
+            Load an html document we want to crawl either from a local file-system class (ideal) or if the cache doesn't
+            exist yet, from the web. This will cache any resources loaded from the web so that the next time they will be 
             available locally.
         """
         if not path.exists(filepath):
@@ -113,7 +113,8 @@ class ScripturesBYUCrawler(BaseCrawler):
         load new content. However, through snooping around I found their Javascript got resources that were essentially
         pieces of HTML code on a public HTTP GET API, so all I have to do is find a way to change the JavaScript function
         calls into URLs to load the same textual content the JavaScript would, or use Selenium to simulate clicking the
-        links and thus triggering new content loads. I have opted to go with the former, believing it to be quicker.
+        links and thus triggering new content loads. I opted to go with the former, believing it to be quicker to
+        implement and execute.
         
         As this webpage is so unique, I wrote a very specialiazed crawler for it.
     """
