@@ -84,13 +84,22 @@ class ConferenceTalkScraper:
         #talklabel.text looks something like
         #'1942–A:2, Heber J. Grant, Personal Testimony of the Lord’s Providence'
         #pieces[0] = '1942–A:2', pieces[1] = 'Heber J. Grant', pieces[2] = 'Personal Testimony of the Lord’s Providence'
+        #We can only split a max of 2 times on commas otherwise we will split the title if it has any commas in it.
         pieces = talklabel.text.split(', ', 2)
-       
+        
         try:
             year = int(pieces[0][:4])
             month = pieces[0][5]
             speaker = pieces[1]
-            title = pieces[2]
+            
+            #Unfortunately sometimes the name has a comma in it, specifically "J Reuben Clark, Jr." (and there is one name
+            # with ", Sr." in it too. In order to detect this we must check if the third character is a '.' and then move 
+            # the substring from the title to the name
+            if pieces[2][2] == '.': #Jr. or Sr.
+                speaker += ", " + pieces[2][:3]
+                title = pieces[2][5:] #get rid the first 5 characters: "Jr., " or "Sr., "
+            else:
+                title = pieces[2]
         except:
             print(f"Error in {filename}: couldn't parse textlabel with content: '{textlabel.text}'")
             return
@@ -166,6 +175,8 @@ def test_scraper():
     #Test processing one old type and one new type file.
     scraper._process_file("1.html")
     scraper._process_file("8354.html")
+    #Test talk with J Reuben Clark, Jr. as speaker
+    scraper._process_file("100.html")
    
 if __name__ == "__main__":
     #test_scraper()
