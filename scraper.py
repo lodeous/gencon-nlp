@@ -25,7 +25,6 @@ class ConferenceTalkScraper:
         self.base_path = base_path
         self.out_base_path = out_base_path
         self.summary_dict = {}
-        pass
         
     def scrape(self):
         """
@@ -52,7 +51,7 @@ class ConferenceTalkScraper:
         with open(path, encoding='utf-8') as f:
             html = f.read()
         if html:
-            self._process_html(str(path), html)
+            self._process_html(str(path).split('/')[-1], html)
             
     def _process_html(self, filename, html):
         """
@@ -73,9 +72,9 @@ class ConferenceTalkScraper:
         content_id = filename[:-5]
         
         #Skip processing files that have already been processed
-        export_path = self.out_base_path + content_id + ".txt"
-        if os.path.exists(export_path):
-            return
+        #export_path = self.out_base_path + content_id + ".txt"
+        #if os.path.exists(export_path):
+        #    return
     
         print("Processing:", filename)
     
@@ -85,7 +84,7 @@ class ConferenceTalkScraper:
         #talklabel.text looks something like
         #'1942–A:2, Heber J. Grant, Personal Testimony of the Lord’s Providence'
         #pieces[0] = '1942–A:2', pieces[1] = 'Heber J. Grant', pieces[2] = 'Personal Testimony of the Lord’s Providence'
-        pieces = talklabel.text.split(', ')
+        pieces = talklabel.text.split(', ', 2)
        
         try:
             year = int(pieces[0][:4])
@@ -166,7 +165,8 @@ def test_scraper():
     scraper = ConferenceTalkScraper("web/scriptures.byu.edu/content/talks_ajax/", "data/")
     #Test processing one old type and one new type file.
     scraper._process_file("1.html")
-    scraper._process_file("7837.html")
+    scraper._process_file("8354.html")
    
 if __name__ == "__main__":
+    #test_scraper()
     ConferenceTalkScraper("web/scriptures.byu.edu/content/talks_ajax/", "data/").scrape()
