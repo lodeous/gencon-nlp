@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import shutil
 
-DATA_ROOT = "data/"
+DATA_ROOT = "../data/"
 
 def get_corpus_and_basic_stats(root):
     # This regex excludes files of the form "*.meta.txt" while selecting files of the form "*.txt"
@@ -70,7 +70,7 @@ def mark_train_test_in_dataframe(df):
         df.loc[df["File"] == filename, "Train"] = 0
     
 def create_train_test_split(test_ratio=0.3, random_seed=9001):
-    summary_df = pd.read_csv(DATA_ROOT+"summary.csv", index_col=0)
+    summary_df = pd.read_csv(DATA_ROOT+"../summary.csv", index_col=0)
     
     #Ensure the data/train and data/test directories are created
     train_dir = DATA_ROOT + "train/"

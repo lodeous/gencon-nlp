@@ -56,7 +56,7 @@ def create_key(filename):
     key = title + ":" + date
     return key
 
-directory='./churchofjesuschrist.org'
+directory='../web/churchofjesuschrist.org'
 def create_topic_dictionary(directory):
     """Given a directory, parse through the topics in the directory
     then parse through each file in the folder to get the talks that
@@ -77,7 +77,7 @@ def create_topic_dictionary(directory):
     return topic_dictionary
 
 if __name__=="__main__":
-	directory='./churchofjesuschrist.org'
+	directory='../web/churchofjesuschrist.org'
 	topic_dictionary = create_topic_dictionary(directory)
 	data = pd.DataFrame.from_dict(topic_dictionary, orient='index')
-	data.to_csv('topic_data.csv')
+	data.to_csv('../topic_data.csv')

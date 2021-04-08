@@ -171,7 +171,7 @@ class ConferenceTalkScraper:
         df.to_csv(self.out_base_path+"summary.csv")
 
 def test_scraper():
-    scraper = ConferenceTalkScraper("web/scriptures.byu.edu/content/talks_ajax/", "data/")
+    scraper = ConferenceTalkScraper("../web/scriptures.byu.edu/content/talks_ajax/", "../data/")
     #Test processing one old type and one new type file.
     scraper._process_file("1.html")
     scraper._process_file("8354.html")
@@ -180,4 +180,4 @@ def test_scraper():
    
 if __name__ == "__main__":
     #test_scraper()
-    ConferenceTalkScraper("web/scriptures.byu.edu/content/talks_ajax/", "data/").scrape()
+    ConferenceTalkScraper("../web/scriptures.byu.edu/content/talks_ajax/", "../data/").scrape()

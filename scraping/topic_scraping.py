@@ -32,7 +32,7 @@ def crawl_topics(
     return links
 
 
-def retrieve_pages(links, parent_dir="./web/churchofjesuschrist.org"):
+def retrieve_pages(links, parent_dir="../web/churchofjesuschrist.org"):
     """
     Download General Conference talks, with a directory for each topic
     """

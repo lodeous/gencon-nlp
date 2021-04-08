@@ -120,7 +120,7 @@ class ScripturesBYUCrawler(BaseCrawler):
     """
     def __init__(self, **kwargs):
         if "web_cache_root" not in kwargs:
-            kwargs["web_cache_root"] = "web/scriptures.byu.edu/"
+            kwargs["web_cache_root"] = "../web/scriptures.byu.edu/"
         super().__init__(**kwargs)
         
     def parse_js_link(self, js_onclick):
