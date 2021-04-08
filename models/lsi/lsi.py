@@ -173,18 +173,23 @@ class LSI():
                         counts.append(count)
                         doc_index.append(doc)
                         t[word_ind] += count
-                        
+      
         # get global weights
         t = np.array(t)
         X = sparse.csr_matrix((counts, [doc_index, word_index]),
-                            shape=(len(paths), len(vocab)), dtype=np.float64).toarray()
+                            shape=(len(paths), len(vocab)), dtype=np.float64)#.toarray()
 
         # calculate p as a matrix and g as a row vector
         P = X / t
-        G = P * np.log(P + 1)
-        g = 1 + (np.sum(G, axis=0) / len(paths))
+        logP = sparse.csr_matrix(np.log(P + 1))
+        P = sparse.csr_matrix(P)
+        G = P.multiply(logP)
+        del P; del logP
+
+        g = 1 + np.array((np.sum(G, axis=0) / len(paths))).flatten()
+        del G
 
         # calculate A as a sparse matrix
-        A = sparse.csr_matrix(g * np.log(X + 1))
+        A = sparse.csr_matrix(g * np.log(X.toarray() + 1))
         
         return A, paths
