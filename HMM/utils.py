@@ -1,3 +1,7 @@
+import numpy as np
+import string
+
+
 # convert a talk into an array of integers using the dictionary provided
 def prep_text(text, dictionary):
     X = dictionary.doc2idx(text)
