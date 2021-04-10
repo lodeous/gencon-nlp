@@ -14,11 +14,14 @@ INSTEAD OF GOING THROUGH TOPICS - JUST LEAVE IT RUNNING throughout the night, so
 path = 'other_files/'
 f = 'merged_summary_topics.json'
 repeat_lda_times = 5
-num_hours_to_run = 12
-num_hours_to_run = 1 / 30 #for testing 60/30 = 2 minutes
+num_hours_to_run = 11
+directory = '3mass_json'
+# num_hours_to_run = 1 / 30 #for testing 60/30 = 2 minutes
 params = [(0.001,1)
     ,(0.005,1)
     ,(0.001,0.17)]
+STOP_WORDS_LOC = '../3winter21/Gibbs_LDA/' + 'stopwords.txt'
+STOP_WORDS_LOC = 'stopwords.txt'
 
 
 new = pd.read_json(path + f)
@@ -27,9 +30,10 @@ new['File'] = [x[5:] for x in new.File]
 new['File_num'] = [int(x[:-4]) for x in new.File]
 new['tag_count'] = [len(x) for x in new.topic_lists]
 
+files = (new['File_num'][::-1])[2050:]
 # raise NotImplementedError('pick alpha and beta values')
 try:
-    os.mkdir('mass_json')
+    os.mkdir(directory)
 except:
     pass
 
@@ -40,8 +44,9 @@ counter = 1
 num_seconds_in_min = 60
 num_min_in_hour = 60
 output_file_count = 0
-total_times = len(new['File_num'])
-for file_num in new['File_num'][::-1]:
+total_times = len(files) * repeat_lda_times
+print('about to start loop')
+for file_num in files:
     for i in range(repeat_lda_times):
         #so we don't have to iterate through the whole thing if we don't want to
         if (time.time() - beginning) / (num_seconds_in_min * num_min_in_hour ) < num_hours_to_run:
@@ -58,7 +63,7 @@ for file_num in new['File_num'][::-1]:
                 # gs._sweep()
 
                 gs.sample(filename='data2/' + new.loc[new.File_num == file_num].File.values[0]
-                        , stopwords_file='../3winter21/Gibbs_LDA/' + 'stopwords.txt')
+                        , stopwords_file=STOP_WORDS_LOC)
 
                 results[counter] = {'File_num':file_num
                      ,'Title':x.Title.values[0]
@@ -87,15 +92,16 @@ for file_num in new['File_num'][::-1]:
                 counter += 1
         else:
             break
-    if (counter % 70) == 0:
-        print(f'done with counter = {counter},or {np.round(counter / total_times * 100,1)}% done')
-        print(f'its been running for {np.round((time.time() - beginning) / (60 * 60),2)} hours')
-    #if it outputs a file at each
-    if (counter % 500) == 0:
-        pd.DataFrame(results).T.to_json(f'mass_json/first_mass_lda_at_{output_file_count}.json')
-        output_file_count += 1
-        print(f'there were {errors} errors by counter = {counter}, or {np.round(errors / counter * 100,2)}%')
-final_filename = f'mass_json/first_mass_lda_at_{output_file_count}.json'
+        if (counter % 7) == 0:
+            print(f'done with counter = {counter},or {np.round(counter / total_times * 100,1)}% done')
+            print(f'its been running for {np.round((time.time() - beginning) / (60 * 60),2)} hours')
+        #if it outputs a file at each
+        if (counter % 500) == 0:
+            pd.DataFrame(results).T.to_json(f'{directory}/first_mass_lda_at_{output_file_count}.json')
+            output_file_count += 1
+            print(f'there were {errors} errors by counter = {counter}, or {np.round(errors / counter * 100,2)}%')
+
+final_filename = f'{directory}/first_mass_lda_at_{output_file_count}.json'
 pd.DataFrame(results).T.to_json(final_filename)
 print('exported:',final_filename,'as final file')
 print(f'there were {errors} errors by counter = {counter}, or {np.round(errors / counter * 100,2)}%')
