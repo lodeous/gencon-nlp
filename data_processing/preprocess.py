@@ -67,7 +67,7 @@ def mark_train_test_in_dataframe(df):
     df["Train"] = 1
     
     for filename in test_list:
-        df.loc[df["File"] == filename, "Train"] = 0
+        df.loc[df["File"] == "data/"+filename, "Train"] = 0
     
 def create_train_test_split(test_ratio=0.3, random_seed=9001):
     summary_df = pd.read_csv(DATA_ROOT+"../summary.csv", index_col=0)
