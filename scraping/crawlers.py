@@ -13,7 +13,7 @@ class BaseCrawler:
     """
     defaults = dict(
         delay=2,
-        web_cache_root = "web/"
+        web_cache_root = "../web/"
     )
 
     def __init__(self, **kwargs):
