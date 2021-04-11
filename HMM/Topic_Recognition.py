@@ -76,5 +76,5 @@ def hyperparameter_states(text, dictionary, list_of_states, talks, n=50):
 topic_list, test_data = go_through_topics()
 
 with open('topic_list.txt', 'a') as file:
-    file.write(topic_list)
+    file.write(str(topic_list))
 test_data.to_json('topic_hmm_test_data.json')
