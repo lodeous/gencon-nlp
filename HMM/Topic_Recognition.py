@@ -10,17 +10,19 @@ import pickle
 
 def go_through_topics():
     data = pd.read_csv("../merged_summary_topics.csv")
+    total = data.shape[0]
     topic_list = [column for column in data.columns if column not in
                   ['Year', 'Speaker', 'Title', 'File', 'Month', 'topic_lists', 'Train',
                    'Month_letter', 'Month', 'Kicker', 'Unnamed: 0', 'Unnamed: 0.1']]
     topics_used = []
+    dictionaries = []
     test_data = None
     for topic in topic_list:
         file_name = ('_').join(topic.split(' '))
         df = pd.read_csv(f"../Topic_Data/{file_name}.csv")
         #use only topics that have more than 50 talks
         if df.shape[0] >=50:
-            topics_used.append(topic)
+            topics_used.append((topic, df.shape[0]))
         else:
             continue
 
@@ -44,7 +46,7 @@ def go_through_topics():
 
         #create the dictionary
         dictionary = corpora.Dictionary([df_text])
-
+        dictionaries.append(dictionary)
         #minimize the aic to choose the optimal number of components
         components, AIC = hyperparameter_states(df_text, dictionary, np.arange(2, 6), df_talks)
 
@@ -56,11 +58,11 @@ def go_through_topics():
         #save the model
         with open(f"{topic}bestModel", 'wb') as file:
             pickle.dump(best_model, file)
-    return topic_list, test_data
+    return topic_list, test_data, dictionaries, total
 
-def hyperparameter_states(text, dictionary, list_of_states, talks, n=50):
-    def calculate_aic(n, mse, num_params):
-        aic = n * mse + 2 * num_params
+def hyperparameter_states(text, dictionary, list_of_states, talks):
+    def calculate_aic(K, score):
+        aic = 2*K - 2*score
         return aic
     best_aic = np.inf
     best_state = None
@@ -68,12 +70,13 @@ def hyperparameter_states(text, dictionary, list_of_states, talks, n=50):
         model = hmm.MultinomialHMM(n_components=num, n_iter=100, tol=1e-3)
         model.fit(prep_text(text, dictionary))
         score = model.score(prep_text(talks[-1], dictionary))
-        if score < best_aic:
-            best_aic = score
+        new_aic = calculate_aic(num, score)
+        if new_aic < best_aic:
+            best_aic = new_aic
             best_state = num
     return best_state, best_aic
 
-topic_list, test_data = go_through_topics()
+topic_list, test_data, dictionaries, total = go_through_topics()
 
 with open('topic_list.txt', 'a') as file:
     file.write(str(topic_list))
